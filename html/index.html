@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Programmers.io Assignment</title>
+<link href="style.css" type="text/css" rel="stylesheet">
+<script>
+    let records = [];
+    let currentIndex = 0;
+    const batchSize = 3;
+
+    function fetchNextRecords() {
+       const xhr = new XMLHttpRequest();
+       xhr.onreadystatechange = function() {
+       if (this.readyState === 4 && this.status === 200) {
+        const data = JSON.parse(this.responseText);
+          if (data.length > 0) {
+            records = records.concat(data);
+            showRecords();
+          } else {
+            showPopup(); // Show the popup when there are no more records
+          }
+        }
+      };
+      xhr.open("GET", "index.php?index=" + currentIndex, true);
+      xhr.send();
+      currentIndex += batchSize;
+    }
+
+    function showPopup() {
+      alert("No more records to display!");
+    }
+
+    function showRecords() {
+      const container = document.getElementById("person_detail--wrapper");
+      container.innerHTML = "";
+      for (let i = 0; i < records.length; i++) {
+        const record = records[i];
+        container.innerHTML += `
+        <div class="row"><div class="no">${i+1}</div><div class="person--wrap"><div>Name : ${record.name}</div><div>Location : ${record.location}</div></div>`;
+        document.getElementById('batchsize').innerHTML = '';
+        document.getElementById('batchsize').innerHTML = i+1;
+      }
+    }
+    
+    fetchNextRecords(); // Fetch first batch of records on page load
+  </script>
+  </head>
+  <body>
+  <div class="wrapper">
+    <div class="overlya-wrap"></div>
+    <div class="page-width">
+    <div class="inner-width">
+    <div class="table_button--wrapper">
+       <div class="table_wrap">
+           <h1>People data</h1>
+       </div>
+       <div class="button_wrap">
+           <input type="button" value="Next Person" onclick="fetchNextRecords()" />
+       </div>
+    </div>    
+   <div id="person_detail--wrapper">
+     
+   </div>
+   <div class="bottom-text">
+    <p>Currently <span id="batchsize"></span> people showing</p>
+   </div>
+   </div>
+   </div>
+   </div>
+
+</body>
+</html>
